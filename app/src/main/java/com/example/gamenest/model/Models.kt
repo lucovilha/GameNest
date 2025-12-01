@@ -18,3 +18,15 @@ data class Game(
     val items: List<ShopItem>
 ) : Serializable
 
+data class HistoryEntry(
+    val gameName: String,
+    val imageRes: Int,
+    val type: String,
+    val timeAgo: String
+) : Serializable
+
+data class User(
+    val name: String,
+    val email: String
+) : Serializable
+

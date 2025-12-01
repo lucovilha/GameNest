@@ -48,9 +48,13 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     topBar = {
                         TopAppBar(
-                            title = { Text("Name of the company") },
+                            title = { Text("GameNest") },
+                            actions = {
+                                Image(painter = painterResource(id = R.drawable.ic_bell), contentDescription = "Notifications", modifier = Modifier.padding(end = 8.dp))
+                                Image(painter = painterResource(id = R.drawable.ic_settings), contentDescription = "Settings", modifier = Modifier.padding(end = 8.dp))
+                            },
                             colors = TopAppBarDefaults.topAppBarColors(
-                                containerColor = MaterialTheme.colorScheme.surface
+                                containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
                             )
                         )
                     },
@@ -109,6 +113,7 @@ private fun GameCard(game: Game, onClick: () -> Unit) {
 
 @Composable
 private fun BottomBar() {
+    val ctx = androidx.compose.ui.platform.LocalContext.current
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -116,7 +121,32 @@ private fun BottomBar() {
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            RowIcons()
+            androidx.compose.foundation.layout.Row(
+                horizontalArrangement = Arrangement.spacedBy(40.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(painterResource(id = R.drawable.ic_star), contentDescription = "Featured")
+                Image(
+                    painterResource(id = R.drawable.ic_history),
+                    contentDescription = "History",
+                    modifier = Modifier.clickable {
+                        ctx.startActivity(android.content.Intent(ctx, HistoryActivity::class.java).apply {
+                            putExtra(
+                                "history",
+                                java.util.ArrayList(sampleHistory())
+                            )
+                        })
+                    }
+                )
+                Image(
+                    painterResource(id = R.drawable.ic_profile),
+                    contentDescription = "Profile",
+                    modifier = Modifier.clickable {
+                        val user = com.example.gamenest.model.User("User Name", "user@email.com")
+                        ctx.startActivity(android.content.Intent(ctx, ProfileActivity::class.java).apply { putExtra("user", user) })
+                    }
+                )
+            }
             Text(
                 text = "Featured · History · Profile",
                 style = MaterialTheme.typography.bodySmall,
@@ -126,16 +156,13 @@ private fun BottomBar() {
     }
 }
 
-@Composable
-private fun RowIcons() {
-    androidx.compose.foundation.layout.Row(
-        horizontalArrangement = Arrangement.spacedBy(40.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Image(painterResource(id = R.drawable.ic_star), contentDescription = "Featured")
-        Image(painterResource(id = R.drawable.ic_history), contentDescription = "History")
-        Image(painterResource(id = R.drawable.ic_profile), contentDescription = "Profile")
-    }
+private fun sampleHistory(): List<com.example.gamenest.model.HistoryEntry> {
+    return listOf(
+        com.example.gamenest.model.HistoryEntry("Star Racer", R.drawable.img_game1, "Played", "2 hours ago"),
+        com.example.gamenest.model.HistoryEntry("Star Racer", R.drawable.img_game2, "Purchased Item", "1 day ago"),
+        com.example.gamenest.model.HistoryEntry("Jungle Quest", R.drawable.img_game2, "Played", "3 days ago"),
+        com.example.gamenest.model.HistoryEntry("Jungle Quest", R.drawable.img_game1, "Purchased Item", "1 week ago")
+    )
 }
 
 private fun sampleGames(): List<Game> {
