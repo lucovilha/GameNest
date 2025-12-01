@@ -44,8 +44,12 @@ class ProfileActivity : ComponentActivity() {
                 Scaffold(
                     topBar = {
                         TopAppBar(
-                            title = { Text("Name of the company") },
-                            colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
+                            title = { Text("GameNest") },
+                            actions = {
+                                Image(painter = painterResource(id = R.drawable.ic_bell), contentDescription = "Notifications", modifier = Modifier.padding(end = 8.dp))
+                                Image(painter = painterResource(id = R.drawable.ic_settings), contentDescription = "Settings", modifier = Modifier.padding(end = 8.dp))
+                            },
+                            colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f))
                         )
                     },
                     bottomBar = { ProfileBottomBar(user) }
@@ -113,4 +117,3 @@ private fun ProfilePreview() {
         Column(modifier = Modifier.padding(PaddingValues())) {}
     }
 }
-

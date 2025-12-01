@@ -99,7 +99,8 @@ private fun GameDetailScreen(game: Game, onBack: () -> Unit) {
                     containerColor = MaterialTheme.colorScheme.surface
                 )
             )
-        }
+        },
+        bottomBar = { DetailBottomBar() }
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
             Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -175,6 +176,40 @@ private fun GameDetailScreen(game: Game, onBack: () -> Unit) {
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun DetailBottomBar() {
+    val ctx = LocalContext.current
+    androidx.compose.foundation.layout.Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(64.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        androidx.compose.foundation.layout.Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            androidx.compose.foundation.layout.Row(
+                horizontalArrangement = Arrangement.spacedBy(40.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(painter = painterResource(id = R.drawable.ic_star), contentDescription = "Featured", modifier = Modifier.clickable {
+                    ctx.startActivity(android.content.Intent(ctx, MainActivity::class.java))
+                })
+                Image(painter = painterResource(id = R.drawable.ic_history), contentDescription = "History", modifier = Modifier.clickable {
+                    ctx.startActivity(android.content.Intent(ctx, HistoryActivity::class.java))
+                })
+                Image(painter = painterResource(id = R.drawable.ic_profile), contentDescription = "Profile", modifier = Modifier.clickable {
+                    val user = com.example.gamenest.model.User("User Name", "user@email.com")
+                    ctx.startActivity(android.content.Intent(ctx, ProfileActivity::class.java).apply { putExtra("user", user) })
+                })
+            }
+            Text(
+                text = "Featured · History · Profile",
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
         }
     }
 }
