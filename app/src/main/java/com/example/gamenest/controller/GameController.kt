@@ -21,16 +21,16 @@ object GameController {
         return listOf(
             Game(
                 id = "g1",
-                name = "Star Racer",
-                description = "Race through nebulas and avoid asteroids.",
-                imageRes = R.drawable.img_game1,
+                name = "Fortnite",
+                description = "Battle royale com construção e ação.",
+                imageRes = R.drawable.fortnite,
                 items = game1Items
             ),
             Game(
                 id = "g2",
-                name = "Jungle Quest",
-                description = "Explore ruins and discover ancient secrets.",
-                imageRes = R.drawable.img_game2,
+                name = "FC 26",
+                description = "Futebol com modos competitivos e clubes.",
+                imageRes = R.drawable.fc26,
                 items = game2Items
             )
         )
