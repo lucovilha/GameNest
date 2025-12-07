@@ -7,7 +7,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -43,23 +45,30 @@ class MainActivity : ComponentActivity() {
                             title = { Text("GameNest") },
                             colors = TopAppBarDefaults.topAppBarColors(
                                 containerColor = MaterialTheme.colorScheme.surface
-                            )
+                            ),
+                            windowInsets = WindowInsets(0)
                         )
                     },
                     bottomBar = { BottomNavBar() }
                 ) { innerPadding ->
-                    LazyColumn(
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                        modifier = Modifier.padding(innerPadding)
-                    ) {
-                        items(games) { game: Game ->
-                            GameCard(game = game) {
-                                startActivity(
-                                    Intent(this@MainActivity, GameDetailActivity::class.java).apply {
-                                        putExtra("game", game)
-                                    }
-                                )
+                    Column(modifier = Modifier.padding(innerPadding)) {
+                        Text(
+                            text = "",
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        )
+                        LazyColumn(
+                            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp),
+                            verticalArrangement = Arrangement.spacedBy(20.dp)
+                        ) {
+                            items(games) { game: Game ->
+                                GameCard(game = game) {
+                                    startActivity(
+                                        Intent(this@MainActivity, GameDetailActivity::class.java).apply {
+                                            putExtra("game", game)
+                                        }
+                                    )
+                                }
                             }
                         }
                     }
@@ -83,18 +92,25 @@ private fun MainPreview() {
                     title = { Text("GameNest") },
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.surface
-                    )
+                    ),
+                    windowInsets = WindowInsets(0)
                 )
             },
             bottomBar = { BottomNavBar() }
         ) { innerPadding ->
-            LazyColumn(
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.padding(innerPadding)
-            ) {
-                items(games) { game: Game ->
-                    GameCard(game = game) {}
+            Column(modifier = Modifier.padding(innerPadding)) {
+                Text(
+                    text = "Olá, Jogador",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+                LazyColumn(
+                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
+                ) {
+                    items(games) { game: Game ->
+                        GameCard(game = game) {}
+                    }
                 }
             }
         }

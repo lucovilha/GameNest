@@ -38,6 +38,7 @@ import androidx.annotation.DrawableRes
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.statusBarsPadding
 import com.example.gamenest.R
 import com.example.gamenest.model.Game
 import com.example.gamenest.model.ShopItem
@@ -111,8 +112,8 @@ private fun GameDetailScreen(game: Game, onBack: () -> Unit) {
     val ctx = LocalContext.current
 
     Scaffold { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding)) {
-            Box(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(innerPadding).statusBarsPadding()) {
+            Box(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp)) {
                 SafeImage(
                     resId = game.imageRes,
                     contentDescription = game.name,
