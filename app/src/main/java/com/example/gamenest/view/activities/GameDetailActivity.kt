@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.annotation.DrawableRes
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.shape.CircleShape
@@ -46,18 +47,22 @@ class GameDetailActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val game = intent.getSerializableExtra("game") as? Game
+        val game = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            intent.getSerializableExtra("game", Game::class.java)
+        } else {
+            @Suppress("DEPRECATION") intent.getSerializableExtra("game") as? Game
+        }
         setContent {
             GameNestTheme {
                 GameDetailScreen(
                     game = game ?: Game(
                         id = "demo",
-                        name = "Fortnite",
+                        name = "FORTNITE",
                         description = "Battle royale com construção e ação.",
                         imageRes = R.drawable.fortnite,
                         items = listOf(
-                            ShopItem("d1", "Demo Item", "Preview only", 9.99, R.drawable.img_item1),
-                            ShopItem("d2", "Demo Item 2", "Preview only", 5.49, R.drawable.img_item2),
+                            ShopItem("d1", "Sun & Scales Pack", "Bundle temático com visual e itens.", 12.99, R.drawable.fortnite),
+                            ShopItem("d2", "Cross Comms Pack", "Inclui 600 V-Bucks e acessórios temáticos.", 9.49, R.drawable.fortnitelogo),
                             ShopItem("d3", "Demo Item 3", "Preview only", 12.99, R.drawable.img_item3)
                         )
                     ),
@@ -66,6 +71,37 @@ class GameDetailActivity : ComponentActivity() {
             }
         }
     }
+}
+
+@Composable
+private fun SafeImage(@DrawableRes resId: Int, contentDescription: String, modifier: Modifier, contentScale: ContentScale) {
+    val valid = remember(resId) { isValidDrawable(resId) }
+    Image(
+        painter = painterResource(id = if (valid) resId else R.drawable.ic_profile),
+        contentDescription = contentDescription,
+        modifier = modifier,
+        contentScale = contentScale
+    )
+}
+
+private fun isValidDrawable(@DrawableRes resId: Int): Boolean {
+    return resId in setOf(
+        R.drawable.fortnite,
+        R.drawable.fortnitelogo,
+        R.drawable.fc26,
+        R.drawable.packfort1,
+        R.drawable.packfort2,
+        R.drawable.packfort3,
+        R.drawable.fifapoints1,
+        R.drawable.fifapoints2,
+        R.drawable.fifapoints3,
+        R.drawable.img_item1,
+        R.drawable.img_item2,
+        R.drawable.img_item3,
+        R.drawable.img_item4,
+        R.drawable.img_item5,
+        R.drawable.img_item6
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,8 +113,8 @@ private fun GameDetailScreen(game: Game, onBack: () -> Unit) {
     Scaffold { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
             Box(modifier = Modifier.padding(16.dp)) {
-                Image(
-                    painter = painterResource(id = game.imageRes),
+                SafeImage(
+                    resId = game.imageRes,
                     contentDescription = game.name,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -131,8 +167,8 @@ private fun GameDetailScreen(game: Game, onBack: () -> Unit) {
         val item = selectedItem.value!!
         ModalBottomSheet(onDismissRequest = { selectedItem.value = null }) {
             Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                Image(
-                    painter = painterResource(id = item.imageRes),
+                SafeImage(
+                    resId = item.imageRes,
                     contentDescription = item.name,
                     modifier = Modifier.size(64.dp),
                     contentScale = ContentScale.Crop
@@ -141,7 +177,7 @@ private fun GameDetailScreen(game: Game, onBack: () -> Unit) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(text = item.name, style = MaterialTheme.typography.titleMedium)
                     Text(text = item.description, style = MaterialTheme.typography.bodySmall)
-                    Text(text = "$${String.format("%.2f", item.price)}", style = MaterialTheme.typography.bodyMedium)
+                    Text(text = "$${String.format(java.util.Locale.US, "%.2f", item.price)}", style = MaterialTheme.typography.bodyMedium)
                 }
             }
             Row(
@@ -155,7 +191,7 @@ private fun GameDetailScreen(game: Game, onBack: () -> Unit) {
                     modifier = Modifier.clickable {
                         Toast.makeText(
                             ctx,
-                            "Acabou de comprar o item ${item.name} por $${String.format("%.2f", item.price)}",
+                            "Acabou de comprar o item ${item.name} por $${String.format(java.util.Locale.US, "%.2f", item.price)}",
                             Toast.LENGTH_SHORT
                         ).show()
                         selectedItem.value = null
@@ -182,8 +218,8 @@ private fun ItemRow(item: ShopItem, onClick: () -> Unit) {
             .clickable { onClick() }
     ) {
         Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-            Image(
-                painter = painterResource(id = item.imageRes),
+            SafeImage(
+                resId = item.imageRes,
                 contentDescription = item.name,
                 modifier = Modifier.size(56.dp),
                 contentScale = ContentScale.Crop
@@ -193,7 +229,7 @@ private fun ItemRow(item: ShopItem, onClick: () -> Unit) {
                 Text(text = item.name, style = MaterialTheme.typography.titleSmall)
                 Text(text = item.description, style = MaterialTheme.typography.bodySmall)
             }
-            Text(text = "$${String.format("%.2f", item.price)}", style = MaterialTheme.typography.bodyMedium)
+            Text(text = "$${String.format(java.util.Locale.US, "%.2f", item.price)}", style = MaterialTheme.typography.bodyMedium)
         }
     }
 }
@@ -202,17 +238,17 @@ private fun ItemRow(item: ShopItem, onClick: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 private fun GameDetailPreview() {
-    GameNestTheme {
+    GameNestTheme(darkTheme = false, dynamicColor = false) {
         GameDetailScreen(
             game = Game(
                 id = "g1",
-                name = "Fortnite",
+                name = "FORTNITE",
                 description = "Battle royale com construção e ação.",
                 imageRes = R.drawable.fortnite,
                 items = listOf(
-                    ShopItem("p1", "Space Skin", "A bright galaxy skin.", 12.99, R.drawable.img_item1),
-                    ShopItem("p2", "Booster Pack", "Boost speed for 3 rounds.", 9.49, R.drawable.img_item2),
-                    ShopItem("p3", "Golden Blaster", "Laser upgrade.", 14.99, R.drawable.img_item3)
+                    ShopItem("p1", "Sun & Scales Pack", "Bundle temático com visual e itens.", 12.99, R.drawable.packfort1),
+                    ShopItem("p2", "Cross Comms Pack", "Inclui 600 V-Bucks e acessórios temáticos.", 9.49, R.drawable.packfort2),
+                    ShopItem("p3", "Minty Pack", "picareta de natal.", 14.99, R.drawable.packfort3)
                 )
             ),
             onBack = {}
@@ -221,20 +257,20 @@ private fun GameDetailPreview() {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = false)
 @Composable
 private fun GameDetailPreviewFc() {
     GameNestTheme {
         GameDetailScreen(
             game = Game(
                 id = "g2",
-                name = "FC 26",
+                name = "FC26",
                 description = "Futebol com modos competitivos e clubes.",
                 imageRes = R.drawable.fc26,
                 items = listOf(
-                    ShopItem("p4", "Jersey Classic", "Uniforme clássico.", 10.99, R.drawable.img_item4),
-                    ShopItem("p5", "Stadium Pass", "Acesso premium ao estádio.", 8.49, R.drawable.img_item5),
-                    ShopItem("p6", "Boots Pro", "Chuteiras profissionais.", 15.99, R.drawable.img_item6)
+                    ShopItem("p4", "fifa points(1050)", "invista nos fifas points.", 8.49, R.drawable.fifapoints1),
+                    ShopItem("p5", "fifa points(2800)", "invista nos fifas points.", 10.99, R.drawable.fifapoints2),
+                    ShopItem("p6", "fifa points(5900)", "invista nos fifas points.", 15.99, R.drawable.fifapoints3)
                 )
             ),
             onBack = {}

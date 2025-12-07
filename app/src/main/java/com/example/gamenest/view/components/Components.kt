@@ -18,11 +18,45 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.annotation.DrawableRes
+import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gamenest.model.Game
 import com.example.gamenest.R
 import com.example.gamenest.ui.theme.GameNestTheme
+
+@Composable
+private fun SafeImage(@DrawableRes resId: Int, contentDescription: String, modifier: Modifier, contentScale: ContentScale) {
+    val valid = remember(resId) { isValidDrawable(resId) }
+    Image(
+        painter = painterResource(id = if (valid) resId else R.drawable.ic_profile),
+        contentDescription = contentDescription,
+        modifier = modifier,
+        contentScale = contentScale
+    )
+}
+
+private fun isValidDrawable(@DrawableRes resId: Int): Boolean {
+    return resId in setOf(
+        R.drawable.fortnite,
+        R.drawable.fortnitelogo,
+        R.drawable.fc26,
+        R.drawable.packfort1,
+        R.drawable.packfort2,
+        R.drawable.packfort3,
+        R.drawable.fifapoints1,
+        R.drawable.fifapoints2,
+        R.drawable.fifapoints3,
+        R.drawable.img_item1,
+        R.drawable.img_item2,
+        R.drawable.img_item3,
+        R.drawable.img_item4,
+        R.drawable.img_item5,
+        R.drawable.img_item6
+    )
+}
 
 @Composable
 fun GameCard(game: Game, onClick: () -> Unit) {
@@ -34,8 +68,8 @@ fun GameCard(game: Game, onClick: () -> Unit) {
             .clickable { onClick() }
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            Image(
-                painter = painterResource(id = game.imageRes),
+            SafeImage(
+                resId = game.imageRes,
                 contentDescription = game.name,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
